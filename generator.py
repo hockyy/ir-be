@@ -14,7 +14,7 @@ ROW_LIMIT = 20
 COLUMN_LIMIT = 2
 FONT = ImageFont.truetype(FONT_PATH, size=FONT_SIZE)
 
-def init(subtitle: str):
+async def init(subtitle: str):
     with Image.open(BASE_ACHIEVEMENT) as im:
         base = ImageDraw.Draw(im)
         subtitle = subtitle.split(' ')
