@@ -1,5 +1,6 @@
 from PIL import Image, ImageFont, ImageDraw
 import datetime
+import secrets
 
 TITLE_COLOR = "#9f8468"
 SUBTITLE_COLOR = "#4a5467"
@@ -36,8 +37,9 @@ def init(subtitle: str):
 
         filename = f'{datetime.datetime.now()}'
         filename = filename.replace(' ', '-').split(':')
-        filename = f'./output/{filename[0]}-{filename[1]}-{filename[2]}.png'
-        im.save(f'{filename}', quality=20, optimize=True)
+        filename = f'{filename[0]}-{filename[1]}-{filename[2]}-{secrets.token_hex(3)}.png'
+        im.save(f'./output/{filename}', quality=20, optimize=True)
+        return filename
 
 def main():
     init(input())
