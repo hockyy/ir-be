@@ -5,7 +5,7 @@ import secrets
 TITLE_COLOR = "#9f8468"
 SUBTITLE_COLOR = "#4a5467"
 FONT_PATH = "./assets/genshin.ttf"
-BASE_ACHIEVEMENT = "./assets/Proto2id.png"
+BASE_ACHIEVEMENT = {"ID": "./assets/Proto2id.png", "EN": "./assets/Proto2en.png"}
 FONT_SIZE = 75
 X = 505
 Y = 155
@@ -14,8 +14,13 @@ ROW_LIMIT = 20
 COLUMN_LIMIT = 2
 FONT = ImageFont.truetype(FONT_PATH, size=FONT_SIZE)
 
-async def init(subtitle: str):
-    with Image.open(BASE_ACHIEVEMENT) as im:
+
+async def init():
+    return await generateAchievement(subtitle="Selamat Datang!",language="ID", customFilename="dummy")
+
+
+async def generateAchievement(subtitle: str, language: str, customFilename: str = None):
+    with Image.open(BASE_ACHIEVEMENT[language]) as im:
         base = ImageDraw.Draw(im)
         subtitle = subtitle.split(' ')
         subtitlePart = []
@@ -37,12 +42,15 @@ async def init(subtitle: str):
 
         filename = f'{datetime.datetime.now()}'
         filename = filename.replace(' ', '-').split(':')
-        filename = f'{filename[0]}-{filename[1]}-{filename[2]}-{secrets.token_hex(3)}.png'
-        im.save(f'./output/{filename}', quality=20, optimize=True)
-        return filename
+        filename = f'{filename[0]}-{filename[1]}-{filename[2]}-{secrets.token_hex(3)}'
+        if (customFilename): filename = customFilename
+        im.save(f'./output/{filename}.png', quality=20, optimize=True)
+        return f'{filename}.png'
+
 
 def main():
-    init(input())
+    generateAchievement(input())
+
 
 if __name__ == '__main__':
     main()
