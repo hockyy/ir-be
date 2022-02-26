@@ -19,6 +19,7 @@ origins = [
     "http://genshin.hocky.id",
     "https://genshin.hocky.id",
     "http://localhost:3000",
+    "https://genshin-achievements-frontend.vercel.app"
 ]
 
 @app.on_event("startup")
