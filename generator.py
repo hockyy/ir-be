@@ -45,7 +45,7 @@ async def generateAchievement(subtitle: str, language: str, customFilename: str 
         filename = f'{filename[0]}-{filename[1]}-{filename[2]}-{secrets.token_hex(3)}'
         if (customFilename): filename = customFilename
         im.save(f'./output/{filename}.png', quality=20, optimize=True)
-        return f'{filename}.png'
+        return f'{filename}.png', im
 
 
 def main():
