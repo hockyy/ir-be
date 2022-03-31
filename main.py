@@ -44,7 +44,8 @@ origins = [
 
 @app.on_event("startup")
 async def startup_event():
-    await generator.init()
+    # await generator.init()
+    pass
 
 app.add_middleware(
     CORSMiddleware,
