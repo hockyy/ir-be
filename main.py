@@ -1,6 +1,7 @@
 import io
 import json
 
+import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -16,7 +17,7 @@ load_dotenv()
 REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = int(os.getenv("REDIS_PORT"))
 REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
-EXPIRE_IMAGE = 300
+EXPIRE_IMAGE = 60
 
 image_db = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD)
 
@@ -77,19 +78,23 @@ async def check_db():
         tmp_dict = dict()
         redis_keys = redis_db.keys()
         for redis_key in redis_keys:
-            redis_value = redis_db.get(redis_key).decode("utf-8")
-            if(not redis_value.startswith("{")):
-                redis_value = f"\"{redis_value}\""
-            print(redis_value)
-            tmp_dict[redis_key] = json.loads(redis_value)
+            redis_value = redis_db.get(redis_key)
+            try:
+                redis_string = redis_value.decode("utf-8")
+            except:
+                redis_string = redis_value.hex()
+            if(not redis_string.startswith("{")):
+                redis_string = f"\"{redis_string}\""
+            print(redis_string)
+            tmp_dict[redis_key] = json.loads(redis_string)
         all_values[db_name] = tmp_dict
     return all_values
 
 @app.post("/genshin", response_model=GenshinResponse)
 async def read_genshin(genshinQuery: GenshinQuery):
     url, image = await generator.generateAchievement(genshinQuery.caption, genshinQuery.language)
-    image_db.set(url, image)
-    return GenshinResponse(f"image/{url}", "Image succesfully generated", 200)
+    image_db.set(url, image,ex=EXPIRE_IMAGE)
+    return GenshinResponse(f"/image/{url}", "Image succesfully generated", 200)
 
 @app.get("/image/{image_url}")
 async def read_image(image_url:str):
@@ -98,3 +103,6 @@ async def read_image(image_url:str):
         return StreamingResponse(io.BytesIO(data), media_type="image/png")
     except Exception as e:
         return common_error(e)
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, log_level="info")
