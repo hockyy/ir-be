@@ -87,9 +87,9 @@ async def check_db():
 
 @app.post("/genshin", response_model=GenshinResponse)
 async def read_genshin(genshinQuery: GenshinQuery):
-    url, image = "image/" + await generator.generateAchievement(genshinQuery.caption, genshinQuery.language)
-    print(image)
-    return GenshinResponse(url, "Image succesfully generated", 200)
+    url, image = await generator.generateAchievement(genshinQuery.caption, genshinQuery.language)
+    image_db.set(url, image)
+    return GenshinResponse(f"image/{url}", "Image succesfully generated", 200)
 
 @app.get("/image/{image_url}")
 async def read_image(image_url:str):
