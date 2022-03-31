@@ -85,7 +85,7 @@ async def check_db():
                 redis_string = redis_value.hex()
             if(not redis_string.startswith("{")):
                 redis_string = f"\"{redis_string}\""
-            print(redis_string)
+            # print(redis_string)
             tmp_dict[redis_key] = json.loads(redis_string)
         all_values[db_name] = tmp_dict
     return all_values
