@@ -15,3 +15,13 @@ class GenshinResponse(BaseModel):
     url: Optional[str] = None
     detail: Optional[str] = None
     code: Optional[int] = 500
+
+
+class ErrorResponse(BaseModel):
+    def __init__(self, error: str, error_description: str, **data: Any):
+        super().__init__(**data)
+        self.error = error
+        self.error_description = error_description
+
+    error: str = "invalid_token"
+    error_description: str = "An error has occured"

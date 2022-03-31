@@ -1,3 +1,6 @@
+import asyncio
+import io
+
 from PIL import Image, ImageFont, ImageDraw
 import datetime
 import secrets
@@ -18,6 +21,12 @@ FONT = ImageFont.truetype(FONT_PATH, size=FONT_SIZE)
 async def init():
     return await generateAchievement(subtitle="Selamat Datang!",language="ID", customFilename="dummy")
 
+
+def image_to_byte_array(image:Image.Image):
+  imgByteArr = io.BytesIO()
+  image.save(imgByteArr, format=image.format)
+  imgByteArr = imgByteArr.getvalue()
+  return imgByteArr
 
 async def generateAchievement(subtitle: str, language: str, customFilename: str = None):
     with Image.open(BASE_ACHIEVEMENT[language]) as im:
@@ -44,13 +53,13 @@ async def generateAchievement(subtitle: str, language: str, customFilename: str 
         filename = filename.replace(' ', '-').split(':')
         filename = f'{filename[0]}-{filename[1]}-{filename[2]}-{secrets.token_hex(3)}'
         if (customFilename): filename = customFilename
-        im.save(f'./output/{filename}.png', quality=20, optimize=True)
-        return f'{filename}.png', im
+        imgByteArr = io.BytesIO()
+        im.save(imgByteArr, quality=20, optimize=True, format="png")
+        return f'{filename}.png', imgByteArr.getvalue()
 
-
-def main():
-    generateAchievement(input())
-
+async def main():
+    res = await generateAchievement(input(), "ID")
+    print(res)
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())

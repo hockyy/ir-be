@@ -1,14 +1,16 @@
+import io
 import json
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from starlette import status
 from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse, StreamingResponse
 
 import generator
 import os
 import redis
-
 
 load_dotenv()
 REDIS_HOST = os.getenv("REDIS_HOST")
@@ -22,7 +24,7 @@ db_dict = {
     "image_db" : image_db
 }
 
-from model import GenshinQuery, GenshinResponse
+from model import GenshinQuery, GenshinResponse, ErrorResponse
 
 app = FastAPI()
 try:
@@ -57,6 +59,14 @@ async def read_root():
         "code": 200
     }
 
+def common_error(err: Exception):
+    """
+    Returns abnormal JSONResponse
+    """
+    return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
+                        content=ErrorResponse("invalid request", f"{str(err)}").dict())
+
+
 @app.get("/check_db")
 async def check_db():
     """
@@ -80,3 +90,11 @@ async def read_genshin(genshinQuery: GenshinQuery):
     url, image = "image/" + await generator.generateAchievement(genshinQuery.caption, genshinQuery.language)
     print(image)
     return GenshinResponse(url, "Image succesfully generated", 200)
+
+@app.get("/image/{image_url}")
+async def read_image(image_url:str):
+    try:
+        data = image_db.get(image_url)
+        return StreamingResponse(io.BytesIO(data), media_type="image/png")
+    except Exception as e:
+        return common_error(e)
