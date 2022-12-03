@@ -6,7 +6,8 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
 from generator import generate_bsbi
-from model import ErrorResponse, SearchQuery
+from model import ErrorResponse, SearchQuery, SearchResponse, \
+  engine_to_result_list
 
 load_dotenv()
 app = FastAPI()
@@ -40,13 +41,11 @@ async def read_root():
   }
 
 
-@app.post("/search")
+@app.post("/search", response_model=SearchResponse)
 async def search(query: SearchQuery):
   result = BSBI_instance.retrieve_bm25(query.content, k=query.k, optimize=True)
-  print(result)
-  return {
-    "code": 200
-  }
+  result = engine_to_result_list(result)
+  return SearchResponse(500, result)
 
 def common_error(err: Exception):
   """
