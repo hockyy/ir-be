@@ -1,15 +1,10 @@
-import io
-import json
-
 import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from starlette import status
 from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import JSONResponse, StreamingResponse
+from starlette.responses import JSONResponse
 
-import generator
 from model import ErrorResponse
 
 load_dotenv()
