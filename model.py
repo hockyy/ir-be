@@ -16,14 +16,18 @@ class Result(BaseModel):
     self.score = score
     self.path = path
     self.id = path.split('/')[-1]
+    self.excerpt = ""
     with(open(path, "r")) as buffer:
-      tmp_buffer = buffer.read()
-      self.excerpt = (tmp_buffer[:min(len(tmp_buffer), 50)])
+      for i in buffer:
+        self.excerpt += i
+        if (len(self.excerpt) > 200):
+          break
 
   path: Optional[str] = ""
   score: Optional[int] = 0
   id: Optional[str] = ""
   excerpt: Optional[str] = ""
+
 
 class SearchResponse(BaseModel):
   def __init__(self, code: int, results: List[Result], **data: Any):
@@ -34,9 +38,12 @@ class SearchResponse(BaseModel):
   results: Optional[List[Result]] = []
   code: Optional[int] = 500
 
+
 def engine_to_result_list(engine_list):
-  result_list = [Result(engine_result[0], engine_result[1]) for engine_result in engine_list]
+  result_list = [Result(engine_result[0], engine_result[1]) for engine_result in
+                 engine_list]
   return result_list
+
 
 class ErrorResponse(BaseModel):
   def __init__(self, error: str, error_description: str, **data: Any):
