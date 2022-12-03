@@ -9,7 +9,7 @@ h11==0.13.0
 httptools==0.3.0
 idna==3.3
 packaging==21.3
-Pillow==9.0.1
+Pillow==9.3.0
 pydantic==1.9.0
 pyparsing==3.0.7
 python-dotenv==0.19.2
