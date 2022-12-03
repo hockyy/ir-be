@@ -6,6 +6,7 @@ from typing import List
 
 class SearchQuery(BaseModel):
   content: str
+  k: Optional[int] = 10
   rerank: Optional[bool]
 
 

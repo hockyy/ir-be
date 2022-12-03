@@ -5,11 +5,13 @@ from starlette import status
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
+from generator import generate_bsbi
 from model import ErrorResponse, SearchQuery
 
 load_dotenv()
 app = FastAPI()
 STATIC_PATH = "/static"
+BSBI_instance = None
 
 origins = [
   "*"
@@ -18,8 +20,8 @@ origins = [
 
 @app.on_event("startup")
 async def startup_event():
-  # await generator.init()
-  pass
+  global BSBI_instance
+  BSBI_instance = generate_bsbi()
 
 
 app.add_middleware(
@@ -40,7 +42,8 @@ async def read_root():
 
 @app.post("/search")
 async def search(query: SearchQuery):
-  print(query)
+  result = BSBI_instance.retrieve_bm25(query.content, k=query.k, optimize=True)
+  print(result)
   return {
     "code": 200
   }

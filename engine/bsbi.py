@@ -1,17 +1,15 @@
 ## Referensi:
 # https://www.analyticssteps.com/blogs/nltk-python-tutorial-beginners
 # https://www.nltk.org/howto/stem.html
-import functools
 import os
 import pickle
 import contextlib
 import heapq
-import time
 import math
 
-from index import InvertedIndexReader, InvertedIndexWriter
-from util import IdMap, sorted_merge_posts_and_tfs
-from compression import StandardPostings, VBEPostings
+from engine.compression import VBEPostings
+from engine.index import InvertedIndexWriter, InvertedIndexReader
+from engine.util import IdMap, sorted_merge_posts_and_tfs
 from tqdm import tqdm
 import nltk
 from nltk.corpus import stopwords
@@ -56,6 +54,10 @@ class BSBIIndex:
     """
 
     def __init__(self, data_dir, output_dir, postings_encoding, index_name="main_index"):
+        try:
+            os.mkdir(output_dir)
+        except:
+            pass
         self.term_id_map = IdMap()
         self.doc_id_map = IdMap()
         self.doc_length = dict()
@@ -128,7 +130,7 @@ class BSBIIndex:
         td_pairs = []
 
         for doc_file_name in next(os.walk(block_path))[2]:
-            doc_path = f'./{os.path.join(block_path, doc_file_name)}'
+            doc_path = f'{os.path.join(block_path, doc_file_name)}'
             current_doc_id = self.doc_id_map[doc_path]
             with open(doc_path, "r") as f:
                 tokenized_words = Cleaner.clean_and_tokenize(f.read())
@@ -495,15 +497,3 @@ class BSBIIndex:
                     InvertedIndexReader(index_id, self.postings_encoding, directory=self.output_dir))
                     for index_id in self.intermediate_indices]
                 self.merge(indices, merged_index)
-
-
-if __name__ == "__main__":
-
-    try:
-        os.mkdir("index")
-    except:
-        pass
-    BSBI_instance = BSBIIndex(data_dir='collection',
-                              postings_encoding=VBEPostings,
-                              output_dir='index')
-    BSBI_instance.index()  # memulai indexing!

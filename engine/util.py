@@ -113,8 +113,3 @@ def sorted_merge_posts_and_tfs(posts_tfs1, posts_tfs2):
         return_list.append(posts_tfs2[pos2])
         pos2 += 1
     return return_list
-
-
-def test(output, expected):
-    """ simple function for testing """
-    return "PASSED" if output == expected else "FAILED"
