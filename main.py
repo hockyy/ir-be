@@ -5,7 +5,7 @@ from starlette import status
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
-from model import ErrorResponse
+from model import ErrorResponse, SearchQuery
 
 load_dotenv()
 app = FastAPI()
@@ -37,6 +37,13 @@ async def read_root():
     "code": 200
   }
 
+
+@app.post("/search")
+async def search(query: SearchQuery):
+  print(query)
+  return {
+    "code": 200
+  }
 
 def common_error(err: Exception):
   """

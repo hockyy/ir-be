@@ -6,7 +6,7 @@ from typing import List
 
 class SearchQuery(BaseModel):
   content: str
-  rerank: bool
+  rerank: Optional[bool]
 
 
 class Result(BaseModel):
