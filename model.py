@@ -46,12 +46,14 @@ class SearchResponse(BaseModel):
 
 
 class SpellCheckResponse(BaseModel):
-  def __init__(self, code: int, spellcheck: str, **data: Any):
+  def __init__(self, code: int, spellcheck: str, changed: bool, **data: Any):
     super().__init__(**data)
     self.code = code
     self.spellcheck = spellcheck
+    self.changed = changed
 
   spellcheck: Optional[str] = ""
+  changed: Optional[bool] = False
   code: Optional[int] = 500
 
 

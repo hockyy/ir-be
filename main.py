@@ -47,10 +47,11 @@ async def search(query: SearchQuery):
   result = engine_to_result_list(result)
   return SearchResponse(200, result)
 
+
 @app.post("/spellcheck", response_model=SpellCheckResponse)
 async def search(query: SearchQuery):
-  result = BSBI_instance.spellcheck(query.content)
-  return SpellCheckResponse(200, result)
+  result, changed = BSBI_instance.spellcheck(query.content)
+  return SpellCheckResponse(200, result, changed)
 
 
 @app.post("/collection")

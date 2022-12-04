@@ -111,7 +111,8 @@ class BSBIIndex:
       self.average_doc_length = merged_index.average_doc_length
 
   def init_spellchecker(self):
-    for filename in tqdm(glob.glob(f"{self.data_dir}/**/*.txt", recursive=True)):
+    for filename in tqdm(
+        glob.glob(f"{self.data_dir}/**/*.txt", recursive=True)):
       # print(filename)
       with open(filename, "r") as buffer:
         sentence = buffer.read()
@@ -508,13 +509,16 @@ class BSBIIndex:
     if not self.loaded:
       self.load()
       self.loaded = 1
-    tokenized_words = Cleaner.tokenize(queries)
+    tokenized_words = Cleaner.tokenize(queries.lower())
     spellchecked = []
+    changed = False
     for q in tokenized_words:
       curq = self.spellchecker.correction(q)
       # print(q, curq)
       spellchecked.append(curq if curq != None else q)
-    return ' '.join(spellchecked)
+      if (spellchecked[-1] != q.lower()):
+        changed = True
+    return ' '.join(spellchecked), changed
 
   def index(self):
     """
