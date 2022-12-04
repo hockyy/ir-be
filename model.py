@@ -1,5 +1,5 @@
+import os
 from typing import Any, Optional
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List
 
@@ -9,18 +9,23 @@ class SearchQuery(BaseModel):
   k: Optional[int] = 10
   rerank: Optional[bool]
 
+class DocsQuery(BaseModel):
+  part: str
+  cid: str
+
 
 class Result(BaseModel):
   def __init__(self, score: int, path: str, **data: Any):
     super().__init__(**data)
     self.score = score
-    self.path = path
+    self.path = path.split('collection')[-1][1:]
     self.id = path.split('/')[-1]
     self.excerpt = ""
     with(open(path, "r")) as buffer:
       for i in buffer:
         self.excerpt += i
         if (len(self.excerpt) > 200):
+          self.excerpt += "..."
           break
 
   path: Optional[str] = ""
@@ -38,6 +43,14 @@ class SearchResponse(BaseModel):
   results: Optional[List[Result]] = []
   code: Optional[int] = 500
 
+
+def get_content(part, cid):
+  cur_path = os.path.join(os.getcwd(), "engine", "collection", part, cid)
+  try:
+    with(open(cur_path, "r")) as buffer:
+      return buffer.read()
+  except:
+    return ""
 
 def engine_to_result_list(engine_list):
   result_list = [Result(engine_result[0], engine_result[1]) for engine_result in
