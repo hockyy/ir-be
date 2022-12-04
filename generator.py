@@ -9,7 +9,7 @@ def generate_bsbi():
   BSBI_instance = BSBIIndex(data_dir=data_dir,
                             postings_encoding=VBEPostings,
                             output_dir=output_dir)
-  BSBI_instance.index()  # memulai indexing!
+  # BSBI_instance.index()  # memulai indexing!
   return BSBI_instance
 
 if __name__ == '__main__':

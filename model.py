@@ -9,6 +9,7 @@ class SearchQuery(BaseModel):
   k: Optional[int] = 10
   rerank: Optional[bool]
 
+
 class DocsQuery(BaseModel):
   part: str
   cid: str
@@ -44,6 +45,16 @@ class SearchResponse(BaseModel):
   code: Optional[int] = 500
 
 
+class SpellCheckResponse(BaseModel):
+  def __init__(self, code: int, spellcheck: str, **data: Any):
+    super().__init__(**data)
+    self.code = code
+    self.spellcheck = spellcheck
+
+  spellcheck: Optional[str] = ""
+  code: Optional[int] = 500
+
+
 def get_content(part, cid):
   cur_path = os.path.join(os.getcwd(), "engine", "collection", part, cid)
   try:
@@ -51,6 +62,7 @@ def get_content(part, cid):
       return buffer.read()
   except:
     return ""
+
 
 def engine_to_result_list(engine_list):
   result_list = [Result(engine_result[0], engine_result[1]) for engine_result in

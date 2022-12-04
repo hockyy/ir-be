@@ -7,7 +7,7 @@ from starlette.responses import JSONResponse
 
 from generator import generate_bsbi
 from model import ErrorResponse, SearchQuery, SearchResponse, \
-  engine_to_result_list, DocsQuery, get_content
+  engine_to_result_list, DocsQuery, get_content, SpellCheckResponse
 
 load_dotenv()
 app = FastAPI()
@@ -45,7 +45,13 @@ async def read_root():
 async def search(query: SearchQuery):
   result = BSBI_instance.retrieve_bm25(query.content, k=query.k, optimize=True)
   result = engine_to_result_list(result)
-  return SearchResponse(500, result)
+  return SearchResponse(200, result)
+
+@app.post("/spellcheck", response_model=SpellCheckResponse)
+async def search(query: SearchQuery):
+  result = BSBI_instance.spellcheck(query.content)
+  return SpellCheckResponse(200, result)
+
 
 @app.post("/collection")
 async def read_root(query: DocsQuery):
